@@ -1,4 +1,6 @@
 # AHAPpy
+<img width="200" alt="Untitled" src="https://github.com/samroman3/AHAPpy/assets/52180475/f9268f85-3a04-4a28-842f-6fb1c6d2240e">
+
 ## WAV to AHAP Converter
 
 A simple Python script that converts WAV files to AHAP (Audio Haptic Pattern) format, which can be used to synchronize audio and haptic effects in applications such as games, virtual reality experiences, and interactive multimedia. Additionally, you can utilize the AHAPpyUI.py file to streamline the conversion process in a simple GUI.
