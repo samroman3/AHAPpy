@@ -8,7 +8,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.30796782750200563
+                        "ParameterValue": 0.6988720803326489
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -25,7 +25,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.5800575262845709
+                        "ParameterValue": 0.444508882772436
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -41,7 +41,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.5372916915679935
+                        "ParameterValue": 0.6599975722682366
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -58,7 +58,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.5404025329839466
+                        "ParameterValue": 0.6964348263508169
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -75,7 +75,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.511287353878981
+                        "ParameterValue": 0.33374035255119217
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -91,7 +91,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.5018075516417141
+                        "ParameterValue": 0.6122758461394419
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -108,7 +108,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.30546046703999935
+                        "ParameterValue": 0.46194774139416606
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -124,7 +124,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.5406231169625786
+                        "ParameterValue": 0.47041749857776477
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -141,7 +141,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.6224974971493823
+                        "ParameterValue": 0.43245630012894937
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -157,7 +157,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.4730739510302336
+                        "ParameterValue": 0.6222327344412945
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -174,7 +174,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.5185201522873633
+                        "ParameterValue": 0.23467160682990645
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -190,7 +190,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.6567690955254917
+                        "ParameterValue": 0.5201631810105788
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -207,7 +207,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.49783781376652064
+                        "ParameterValue": 0.41702761270096256
                     },
                     {
                         "ParameterID": "HapticSharpness",
@@ -224,7 +224,7 @@
                 "EventParameters": [
                     {
                         "ParameterID": "HapticIntensity",
-                        "ParameterValue": 0.5774822620842232
+                        "ParameterValue": 0.5276935914840731
                     },
                     {
                         "ParameterID": "HapticSharpness",
