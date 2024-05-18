@@ -4,12 +4,10 @@ import librosa
 import numpy as np
 from pydub import AudioSegment
 import time
-import threading
-import itertools
-import sys
+import os
 from tqdm import tqdm
 
-def convert_wav_to_ahap(input_wav, output_ahap, mode):
+def convert_wav_to_ahap(input_wav, output_dir, mode, split):
     try:
         # Start timing
         start_time = time.time()
@@ -35,22 +33,45 @@ def convert_wav_to_ahap(input_wav, output_ahap, mode):
         # Isolate bass using a low-pass filter
         bass = librosa.effects.hpss(audio_data, margin=(1.0, 20.0))[0]
 
-        # Generate AHAP content with both transient and continuous events
-        ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration)
+        # Use the directory of the input WAV file if output_dir is not provided
+        if not output_dir:
+            output_dir = os.path.dirname(input_wav)
 
-        # Write AHAP content to file
-        with open(output_ahap, 'w') as f:
-            json.dump(ahap_data, f, indent=4)
+        # Create output directory if it doesn't exist
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_files = []
+
+        if split == "none":
+            ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration, split)
+            output_ahap = os.path.join(output_dir, os.path.basename(input_wav).replace('.wav', '_combined.ahap'))
+            write_ahap_file(output_ahap, ahap_data)
+            output_files.append(output_ahap)
+        else:
+            splits = ['bass', 'vocals', 'drums', 'other']
+            for split_type in splits:
+                ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration, split_type)
+                output_ahap = os.path.join(output_dir, os.path.basename(input_wav).replace('.wav', f'_{split_type}.ahap'))
+                write_ahap_file(output_ahap, ahap_data)
+                output_files.append(output_ahap)
 
         # End timing
         end_time = time.time()
         elapsed_time = end_time - start_time
 
-        print(f"AHAP file '{output_ahap}' generated successfully in {elapsed_time:.2f} seconds.")
+        print(f"AHAP files generated successfully in {elapsed_time:.2f} seconds.")
+        print("Generated files:")
+        for file in output_files:
+            print(f" - {file}")
     except Exception as e:
         print("Error:", e)
 
-def generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration):
+def write_ahap_file(output_ahap, ahap_data):
+    # Write AHAP content to file
+    with open(output_ahap, 'w') as f:
+        json.dump(ahap_data, f, indent=4)
+
+def generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration, split):
     """
     Generate AHAP content with both transient and continuous events.
     """
@@ -68,24 +89,24 @@ def generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, dur
             # Determine event type based on audio features
             haptic_mode = determine_haptic_mode(audio_data, time, sample_rate, mode, harmonic, percussive, bass)
             if haptic_mode in ['transient', 'both']:
-                event = create_event("HapticTransient", time, audio_data, sample_rate)
+                event = create_event("HapticTransient", time, audio_data, sample_rate, split)
                 pattern.append(event)
             if haptic_mode in ['continuous', 'both']:
-                event = create_event("HapticContinuous", time, audio_data, sample_rate)
+                event = create_event("HapticContinuous", time, audio_data, sample_rate, split)
                 pattern.append(event)
             pbar.update(1)
 
     # Add continuous events for bass and harmonic components
-    add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, duration)
+    add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, duration, split)
 
     ahap_data = {"Version": 1.0, "Pattern": pattern}
     return ahap_data
 
-def create_event(event_type, time, audio_data, sample_rate):
+def create_event(event_type, time, audio_data, sample_rate, split):
     """
     Create an event with appropriate parameters based on event type and audio features.
     """
-    intensity, sharpness = calculate_parameters(audio_data, time, sample_rate)
+    intensity, sharpness = calculate_parameters(audio_data, time, sample_rate, split)
     event = {
         "Event": {
             "Time": float(time),
@@ -152,7 +173,7 @@ def determine_haptic_mode(audio_data, time, sample_rate, mode, harmonic, percuss
     else:
         return 'both'
 
-def calculate_parameters(audio_data, time, sample_rate):
+def calculate_parameters(audio_data, time, sample_rate, split):
     # Calculate RMS energy in a small window around the specified time
     window_size = int(sample_rate * 0.02)  # 20 ms window
     start_index = max(0, int((time - 0.01) * sample_rate))  # Start 10 ms before the specified time
@@ -173,12 +194,30 @@ def calculate_parameters(audio_data, time, sample_rate):
     # Scale the energy to the range [0, 1]
     scaled_energy = np.clip(energy / np.max(audio_data), 0, 1)
 
+    # Increase the overall intensity to add more "oomph"
+    scaled_energy *= 1.5
+    scaled_energy = np.clip(scaled_energy, 0, 1)
+
     # Scale sharpness to a range that fits the haptic feedback parameters
     scaled_sharpness = np.clip(sharpness / np.max(spectral_centroid), 0, 1)
 
+    # Adjust parameters based on split type
+    if split == "vocal":
+        scaled_energy *= 1.2
+        scaled_sharpness *= 1.1
+    elif split == "drums":
+        scaled_energy *= 1.5
+        scaled_sharpness *= 1.3
+    elif split == "bass":
+        scaled_energy *= 1.4
+        scaled_sharpness *= 0.9
+    elif split == "other":
+        scaled_energy *= 1.3
+        scaled_sharpness *= 1.2
+
     return scaled_energy, scaled_sharpness
 
-def add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, duration):
+def add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, duration, split):
     """
     Add continuous haptic events for bass and harmonic components.
     """
@@ -192,7 +231,8 @@ def add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, dura
             harmonic_energy = np.sqrt(np.mean(harmonic[int(t * sample_rate):int((t + time_step) * sample_rate)] ** 2))
             
             # Calculate intensity and sharpness
-            intensity = np.clip(bass_energy / np.max(bass), 0, 1)
+            intensity = np.clip(bass_energy / np.max(bass), 0, 1) * 1.5
+            intensity = np.clip(intensity, 0, 1)
             sharpness = np.clip(harmonic_energy / np.max(harmonic), 0, 1)
             
             event = {
@@ -212,8 +252,9 @@ def add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, dura
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert WAV file to AHAP format")
     parser.add_argument("input_wav", help="Input WAV file path")
-    parser.add_argument("output_ahap", help="Output AHAP file path")
+    parser.add_argument("--output_dir", help="Output directory for AHAP files", default=None)
     parser.add_argument("--mode", choices=['sfx', 'music'], default='music', help="Mode for processing: 'sfx' or 'music'")
+    parser.add_argument("--split", choices=['none', 'all', 'vocal', 'drums', 'bass', 'other'], default='none', help="Split mode for processing: 'none', 'all', 'vocal', 'drums', 'bass', 'other'")
     args = parser.parse_args()
 
-    convert_wav_to_ahap(args.input_wav, args.output_ahap, args.mode)
+    convert_wav_to_ahap(args.input_wav, args.output_dir, args.mode, args.split)
