@@ -94,13 +94,16 @@ def determine_haptic_mode(audio_data, time, sample_rate):
         y=audio_data[start_index:end_index], sr=sample_rate
     )
 
+    # Get mean value of spectral centroid for comparison
+    spectral_centroid_mean = np.mean(spectral_centroid)
+
     # Adjust thresholds
     transient_rms_threshold = 0.5  # Increased threshold for transient mode
     continuous_rms_threshold = 0.2  # Decreased threshold for continuous mode
     spectral_threshold = np.percentile(spectral_centroid, 90)  # Higher threshold for transient mode
 
     # Classify based on a combination of features
-    if energy > transient_rms_threshold and spectral_centroid > spectral_threshold:
+    if energy > transient_rms_threshold and spectral_centroid_mean > spectral_threshold:
         return 'transient'
     elif energy < continuous_rms_threshold:
         return 'continuous'
