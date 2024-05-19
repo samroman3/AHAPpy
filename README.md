@@ -1,13 +1,15 @@
 # AHAPpy
-<img width="200" alt="Untitled" src="https://github.com/samroman3/AHAPpy/assets/52180475/f9268f85-3a04-4a28-842f-6fb1c6d2240e">
+<img src="https://github.com/samroman3/AHAPpy/assets/52180475/40fcaf33-45c9-4dbd-93c7-f8f8057d3125" width="200">
+
+
 
 ## WAV to AHAP Converter
 
-A simple Python script that converts WAV files to AHAP (Apple Haptic Audio Pattern) format, which can be used to synchronize audio and haptic effects in iOS applications such as games, virtual reality experiences, and interactive multimedia. Additionally, you can utilize the AHAPpyUI.py file to streamline the conversion process in a simple GUI.
+A Python script that converts WAV files to AHAP (Apple Haptic Audio Pattern) format, which can be used to synchronize audio and haptic effects in games, virtual reality experiences, and interactive multimedia. With a simple GUI, AHAPpyUI.py, to streamline the conversion process.
 
 ## Inspiration
 
-This project was inspired by Lofelt's [NiceVibrations](https://github.com/Lofelt/NiceVibrations), which offers advanced haptic feedback solutions for various applications. I felt a need for an even simpler lightweight implementation of haptic-audio synchronization that focused specifically on iOS development, leading to the creation of this WAV to AHAP converter.
+This project was inspired by Lofelt's [NiceVibrations](https://github.com/Lofelt/NiceVibrations), which offers advanced haptic feedback solutions for various applications. I felt a need for an even simpler implementation of haptic-audio synchronization that focused specifically on iOS development, leading to the creation of this WAV to AHAP converter.
 
 ## Requirements
 - Python 3.x
@@ -22,20 +24,32 @@ You can install the dependencies using pip:
 ```bash
 pip install numpy librosa pydub tkinter
 ```
+or install using the requirements:
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Usage
 ### Using generate_ahap.py
 
 Run the script with the following command:
 ```bash
-python generate_ahap.py input_wav output_ahap
+python generate_ahap.py input_wav [--output_dir OUTPUT_DIR] [--mode MODE] [--split SPLIT]
 ```
 
-*input_wav*: Path to the input WAV file.
+--input_wav: Path to the input WAV file.
+--output_dir: Directory where the output AHAP files will be saved. Defaults to the same directory as the input WAV file.
+--mode: Mode for processing the WAV file. Can be 'sfx' (sound effects) or 'music'. Defaults to 'music'.
+--split: Split mode for processing. Options are 'none', 'all', 'vocal', 'drums', 'bass', 'other'. Only applicable when mode is 'music'. Defaults to 'none'.
 
-*output_ahap*: Path to the output AHAP file.
+Example:
 
-New AHAP files will be saved in the same directory as the WAV file.
+```bash
+python generate_ahap.py example.wav --mode music --split vocal
+```
+
+New AHAP files will be saved in the specified directory, or the same directory as the WAV file if no output directory is specified.
 
 ### Using AHAPpyUI.py
 
@@ -43,11 +57,13 @@ Alternatively, you can use the AHAPpyUI.py file, which provides a minimal GUI fo
 ```bash
 python AHAPpyUI.py
 ```
+<img width="780" alt="Screenshot 2024-05-18 at 9 23 49 PM" src="https://github.com/samroman3/AHAPpy/assets/52180475/99dc5b2a-9547-40c0-adb7-55ce5c1641d5">
 
 ## Features
 - Transient and Continuous Events: The AHAP file contains both transient and continuous haptic events, synchronized with the audio content.
 - Dynamic Parameter Calculation: Haptic parameters such as intensity and sharpness are calculated dynamically based on audio features.
 - Customizable Parameters: You can adjust thresholds and window sizes to customize the conversion process according to your requirements.
+- Music Mode and Splits: In music mode, you can specify different splits such as 'vocal', 'drums', 'bass', and 'other' to process specific components of the audio.
   
 ### How It Works
 The conversion process involves the following steps:
