@@ -72,6 +72,8 @@ The conversion process involves the following steps:
 3. Event Generation: Transient and continuous haptic events are generated based on the audio features.
 4. Parameter Calculation: Haptic parameters such as intensity and sharpness are calculated dynamically.
 5. Output AHAP: The AHAP content is written in JSON format and saved to same directory as the input file.
+ 
+If AHAPpy has helped you in your own projects I would love to hear about it! If you have any questions, feedback, or suggestions for improvement, feel free to reach out.
 
-If you have any questions, feedback, or suggestions for improvement, feel free to reach out. 
+<a href="https://www.ko-fi.com/samroman" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
