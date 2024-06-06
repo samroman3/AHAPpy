@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3ABF6EB62C12222A004711CB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF6EB52C12222A004711CB /* ContentView.swift */; };
+		3ABF6EB82C122244004711CB /* AHAPpySampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF6EB72C122244004711CB /* AHAPpySampleApp.swift */; };
 		3AE088972C0A65C0005D8802 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088962C0A65C0005D8802 /* Assets.xcassets */; };
 		3AE0889A2C0A65C0005D8802 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088992C0A65C0005D8802 /* Preview Assets.xcassets */; };
 		3AE088AA2C0A65E1005D8802 /* atmosphere-1.ahap in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088A02C0A65DC005D8802 /* atmosphere-1.ahap */; };
 		3AE088AB2C0A65E1005D8802 /* atmosphere-1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088A12C0A65DC005D8802 /* atmosphere-1.wav */; };
-		3AE088AC2C0A65E1005D8802 /* AHAPpySampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE088A22C0A65DC005D8802 /* AHAPpySampleApp.swift */; };
-		3AE088AD2C0A65E1005D8802 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE088A32C0A65DC005D8802 /* ContentView.swift */; };
 		3AE088AE2C0A65E1005D8802 /* Wakeup_combined.ahap in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088A42C0A65DC005D8802 /* Wakeup_combined.ahap */; };
 		3AE088AF2C0A65E1005D8802 /* Success1.ahap in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088A52C0A65DD005D8802 /* Success1.ahap */; };
 		3AE088B02C0A65E1005D8802 /* musical-tap-3.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088A62C0A65DD005D8802 /* musical-tap-3.wav */; };
@@ -22,13 +22,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3ABF6EB52C12222A004711CB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3ABF6EB72C122244004711CB /* AHAPpySampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AHAPpySampleApp.swift; sourceTree = "<group>"; };
 		3AE0888D2C0A65BE005D8802 /* AHAPpySample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AHAPpySample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AE088962C0A65C0005D8802 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3AE088992C0A65C0005D8802 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3AE088A02C0A65DC005D8802 /* atmosphere-1.ahap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "atmosphere-1.ahap"; sourceTree = "<group>"; };
 		3AE088A12C0A65DC005D8802 /* atmosphere-1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "atmosphere-1.wav"; sourceTree = "<group>"; };
-		3AE088A22C0A65DC005D8802 /* AHAPpySampleApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AHAPpySampleApp.swift; path = ../../../../../Desktop/AHAPpySample/AHAPpySample/AHAPpySampleApp.swift; sourceTree = "<group>"; };
-		3AE088A32C0A65DC005D8802 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = ../../../../../Desktop/AHAPpySample/AHAPpySample/ContentView.swift; sourceTree = "<group>"; };
 		3AE088A42C0A65DC005D8802 /* Wakeup_combined.ahap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Wakeup_combined.ahap; sourceTree = "<group>"; };
 		3AE088A52C0A65DD005D8802 /* Success1.ahap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Success1.ahap; sourceTree = "<group>"; };
 		3AE088A62C0A65DD005D8802 /* musical-tap-3.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "musical-tap-3.wav"; sourceTree = "<group>"; };
@@ -67,9 +67,9 @@
 		3AE0888F2C0A65BE005D8802 /* AHAPpySample */ = {
 			isa = PBXGroup;
 			children = (
-				3AE088A22C0A65DC005D8802 /* AHAPpySampleApp.swift */,
-				3AE088A32C0A65DC005D8802 /* ContentView.swift */,
 				3AE088A02C0A65DC005D8802 /* atmosphere-1.ahap */,
+				3ABF6EB72C122244004711CB /* AHAPpySampleApp.swift */,
+				3ABF6EB52C12222A004711CB /* ContentView.swift */,
 				3AE088A12C0A65DC005D8802 /* atmosphere-1.wav */,
 				3AE088A92C0A65E1005D8802 /* musical-tap-3.ahap */,
 				3AE088A62C0A65DD005D8802 /* musical-tap-3.wav */,
@@ -169,8 +169,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3AE088AD2C0A65E1005D8802 /* ContentView.swift in Sources */,
-				3AE088AC2C0A65E1005D8802 /* AHAPpySampleApp.swift in Sources */,
+				3ABF6EB82C122244004711CB /* AHAPpySampleApp.swift in Sources */,
+				3ABF6EB62C12222A004711CB /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
