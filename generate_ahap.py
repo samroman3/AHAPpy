@@ -50,6 +50,8 @@ def convert_wav_to_ahap(input_wav, output_dir, mode, split):
         else:
             splits = ['bass', 'vocals', 'drums', 'other']
             for split_type in splits:
+                if split != "all" and split != split_type:
+                    continue
                 ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration, split_type)
                 output_ahap = os.path.join(output_dir, os.path.basename(input_wav).replace('.wav', f'_{split_type}.ahap'))
                 write_ahap_file(output_ahap, ahap_data)
@@ -112,8 +114,8 @@ def create_event(event_type, time, audio_data, sample_rate, split):
             "Time": float(time),
             "EventType": event_type,
             "EventParameters": [
-                {"ParameterID": "HapticIntensity", "ParameterValue": intensity},
-                {"ParameterID": "HapticSharpness", "ParameterValue": sharpness}
+                {"ParameterID": "HapticIntensity", "ParameterValue": float(intensity)},
+                {"ParameterID": "HapticSharpness", "ParameterValue": float(sharpness)}
             ]
         }
     }
@@ -241,8 +243,8 @@ def add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, dura
                     "EventType": "HapticContinuous",
                     "EventDuration": time_step,
                     "EventParameters": [
-                        {"ParameterID": "HapticIntensity", "ParameterValue": intensity},
-                        {"ParameterID": "HapticSharpness", "ParameterValue": sharpness}
+                        {"ParameterID": "HapticIntensity", "ParameterValue": float(intensity)},
+                        {"ParameterID": "HapticSharpness", "ParameterValue": float(sharpness)}
                     ]
                 }
             }
