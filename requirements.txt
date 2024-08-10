@@ -3,3 +3,4 @@ numpy
 pydub
 matplotlib
 scipy
+tqdm
