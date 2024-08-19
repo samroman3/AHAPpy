@@ -6,6 +6,7 @@ from pydub import AudioSegment
 import time
 import os
 from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
 
 def convert_wav_to_ahap(input_wav, output_dir, mode, split):
     try:
@@ -27,11 +28,16 @@ def convert_wav_to_ahap(input_wav, output_dir, mode, split):
         sample_rate = audio.frame_rate
         duration = len(audio_data) / sample_rate
 
-        # Perform HPSS once
-        harmonic, percussive = librosa.effects.hpss(audio_data)
+        with ThreadPoolExecutor() as executor:
+            # Perform HPSS once
+            future_hpss = executor.submit(librosa.effects.hpss, audio_data)
 
-        # Isolate bass using a low-pass filter
-        bass = librosa.effects.hpss(audio_data, margin=(1.0, 20.0))[0]
+            # Isolate bass using a low-pass filter
+            future_bass = executor.submit(librosa.effects.hpss, audio_data, margin=(1.0, 20.0))
+
+            # Retrieve results
+            harmonic, percussive = future_hpss.result()
+            bass = future_bass.result()[0]
 
         # Use the directory of the input WAV file if output_dir is not provided
         if not output_dir:
@@ -225,18 +231,18 @@ def add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, dura
     """
     time_step = 0.1  # Adjust time step for continuous events
     num_steps = int(duration / time_step)
-    
+
     # Create progress bar for continuous events
     with tqdm(total=num_steps, desc="Processing continuous events") as pbar:
         for t in np.arange(0, duration, time_step):
             bass_energy = np.sqrt(np.mean(bass[int(t * sample_rate):int((t + time_step) * sample_rate)] ** 2))
             harmonic_energy = np.sqrt(np.mean(harmonic[int(t * sample_rate):int((t + time_step) * sample_rate)] ** 2))
-            
+
             # Calculate intensity and sharpness
             intensity = np.clip(bass_energy / np.max(bass), 0, 1) * 1.5
             intensity = np.clip(intensity, 0, 1)
             sharpness = np.clip(harmonic_energy / np.max(harmonic), 0, 1)
-            
+
             event = {
                 "Event": {
                     "Time": float(t),
