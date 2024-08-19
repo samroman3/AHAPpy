@@ -49,7 +49,7 @@ def convert_wav_to_ahap(input_wav, output_dir, mode, split):
         output_files = []
 
         if split == "none":
-            ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration, split)
+            ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, bass, duration, split)
             output_ahap = os.path.join(output_dir, os.path.basename(input_wav).replace(os.path.splitext(input_wav)[-1], '_combined.ahap'))
             write_ahap_file(output_ahap, ahap_data)
             output_files.append(output_ahap)
@@ -58,7 +58,7 @@ def convert_wav_to_ahap(input_wav, output_dir, mode, split):
             for split_type in splits:
                 if split != "all" and split != split_type:
                     continue
-                ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration, split_type)
+                ahap_data = generate_ahap(audio_data, sample_rate, mode, harmonic, bass, duration, split_type)
                 output_ahap = os.path.join(output_dir, os.path.basename(input_wav).replace(os.path.splitext(input_wav)[-1], f'_{split_type}.ahap'))
                 write_ahap_file(output_ahap, ahap_data)
                 output_files.append(output_ahap)
@@ -79,7 +79,7 @@ def write_ahap_file(output_ahap, ahap_data):
     with open(output_ahap, 'w') as f:
         json.dump(ahap_data, f, indent=4)
 
-def generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, duration, split):
+def generate_ahap(audio_data, sample_rate, mode, harmonic, bass, duration, split):
     """
     Generate AHAP content with both transient and continuous events.
     """
@@ -95,7 +95,7 @@ def generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, dur
     with tqdm(total=len(event_times), desc="Processing transient events") as pbar:
         for time in event_times:
             # Determine event type based on audio features
-            haptic_mode = determine_haptic_mode(audio_data, time, sample_rate, mode, harmonic, percussive, bass)
+            haptic_mode = determine_haptic_mode(audio_data, time, sample_rate, mode)
             if haptic_mode in ['transient', 'both']:
                 event = create_event("HapticTransient", time, audio_data, sample_rate, split)
                 pattern.append(event)
@@ -105,7 +105,7 @@ def generate_ahap(audio_data, sample_rate, mode, harmonic, percussive, bass, dur
             pbar.update(1)
 
     # Add continuous events for bass and harmonic components
-    add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, duration, split)
+    add_continuous_events(pattern, sample_rate, harmonic, bass, duration)
 
     ahap_data = {"Version": 1.0, "Pattern": pattern}
     return ahap_data
@@ -129,7 +129,7 @@ def create_event(event_type, time, audio_data, sample_rate, split):
         event["Event"]["EventDuration"] = 0.1  # Adjust duration as needed
     return event
 
-def determine_haptic_mode(audio_data, time, sample_rate, mode, harmonic, percussive, bass):
+def determine_haptic_mode(audio_data, time, sample_rate, mode):
     """
     Determine whether to use transient, continuous, or both haptic modes based on audio features.
     """
@@ -139,11 +139,6 @@ def determine_haptic_mode(audio_data, time, sample_rate, mode, harmonic, percuss
     end_index = min(len(audio_data), start_index + window_size)
     energy = np.sqrt(np.mean(audio_data[start_index:end_index] ** 2))
 
-    # Calculate sub-band energies using pre-computed harmonic, percussive, and bass components
-    bass_energy = np.sqrt(np.mean(bass[start_index:end_index] ** 2))
-    percussive_energy = np.sqrt(np.mean(percussive[start_index:end_index] ** 2))
-    harmonic_energy = np.sqrt(np.mean(harmonic[start_index:end_index] ** 2))
-
     # Calculate spectral centroid in a small window around the specified time
     window_size = int(sample_rate * 0.05)  # 50 ms window
     start_index = max(0, int((time - 0.025) * sample_rate))  # Start 25 ms before the specified time
@@ -152,16 +147,8 @@ def determine_haptic_mode(audio_data, time, sample_rate, mode, harmonic, percuss
         y=audio_data[start_index:end_index], sr=sample_rate
     )
 
-    # Calculate additional features
-    zcr = librosa.feature.zero_crossing_rate(y=audio_data[start_index:end_index])
-    spectral_rolloff = librosa.feature.spectral_rolloff(y=audio_data[start_index:end_index], sr=sample_rate)
-    mfccs = librosa.feature.mfcc(y=audio_data[start_index:end_index], sr=sample_rate, n_mfcc=13)
-
     # Get mean value of spectral centroid for comparison
     spectral_centroid_mean = np.mean(spectral_centroid)
-    zcr_mean = np.mean(zcr)
-    spectral_rolloff_mean = np.mean(spectral_rolloff)
-    mfcc_mean = np.mean(mfccs, axis=1)
 
     # Adjust thresholds based on the mode
     if mode == 'sfx':
@@ -225,7 +212,7 @@ def calculate_parameters(audio_data, time, sample_rate, split):
 
     return scaled_energy, scaled_sharpness
 
-def add_continuous_events(pattern, audio_data, sample_rate, harmonic, bass, duration, split):
+def add_continuous_events(pattern, sample_rate, harmonic, bass, duration):
     """
     Add continuous haptic events for bass and harmonic components.
     """
