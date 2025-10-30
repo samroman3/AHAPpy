@@ -3,6 +3,24 @@
 
 
 
+## Swift Package
+
+AHAPpy now ships with a Swift Package that turns audio into Core Haptics patterns at runtime—no `.ahap` files required. Drop the repository into Xcode via **File ▸ Add Packages…** and point it at the project root, or reference the Git URL. The package exposes `HapticManager`, a lightweight helper that analyses WAV files and plays synchronized sound and haptics.
+
+```swift
+import AHAPpy
+
+let manager = HapticManager.shared
+try? manager.playAudioNamed("Wakeup", withExtension: "wav", mode: .music)
+
+// Custom tuning
+var music = HapticManager.Options.musicDefaults
+music.intensityMultiplier = 1.2
+try manager.playAudio(at: url, mode: .music, options: music)
+```
+
+ The sample iOS app (`AHAPpySample`) demonstrates layered and sequential playback using the package, and now includes an audio importer so you can drop in your own WAV (or other Core Audio–supported format) and feel the live-generated haptics. Open the sample project and build on a haptics-capable device—it's already wired to the local Swift package.
+
 ## WAV to AHAP Converter
 
 A Python script that converts WAV files to AHAP (Apple Haptic Audio Pattern) format, which can be used to synchronize audio and haptic effects in games, virtual reality experiences, and interactive multimedia. With a simple GUI, AHAPpyUI.py, to streamline the conversion process. A sample iOS app is avaiable with an example implementation.
