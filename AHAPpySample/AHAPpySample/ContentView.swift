@@ -8,163 +8,163 @@ struct ContentView: View {
     @State private var importedAudioURL: URL?
     @State private var selectedMode: HapticManager.Mode = .music
     @State private var importMessage: String?
+    @State private var playbackToken = UUID()
     
     var body: some View {
-        ZStack {
-            LinearGradient(colors: [.blue.opacity(0.22), .purple.opacity(0.28), .black.opacity(0.35)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                .ignoresSafeArea()
-            
-            ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    header
-                    
-                    sectionCard(title: "Built-in Demos", subtitle: "Preview layered, sequential, and music-driven haptics.") {
-                        VStack(spacing: 16) {
-                            Button {
-                                try? haptics.playAudioNamed("Wakeup", withExtension: "wav", mode: .music)
-                            } label: {
-                                DemoButtonLabel(title: "Wake Up", caption: "Music mode • auto intensity")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(FilledButtonStyle(tint: .indigo))
-                            
-                            Button {
-                                playLayeredEffects()
-                            } label: {
-                                DemoButtonLabel(title: "Layered Atmospheres", caption: "Blend ambient + tap SFX")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(FilledButtonStyle(tint: .mint))
-                            
-                            Button {
-                                playSequentialEffects()
-                            } label: {
-                                DemoButtonLabel(title: "Sequenced Moments", caption: "Timed transitions demo")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(FilledButtonStyle(tint: .orange))
-                        }
-                    }
-                    
-                    sectionCard(title: "Bring Your Own Audio", subtitle: "Drop in any Core Audio compatible file and feel the live-generated haptics.") {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Picker("Processing Mode", selection: $selectedMode) {
-                                Text("Music")
-                                    .tag(HapticManager.Mode.music)
-                                Text("SFX")
-                                    .tag(HapticManager.Mode.sfx)
-                            }
-                            .pickerStyle(.segmented)
-                            
-                            Button {
-                                isImporting = true
-                            } label: {
-                                Label("Import Audio", systemImage: "square.and.arrow.down")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(FilledButtonStyle(tint: .accentColor))
-                            
-                            if let url = importedAudioURL {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Label(url.lastPathComponent, systemImage: "waveform")
-                                        .font(.subheadline.weight(.medium))
-                                    Text("Stored locally and ready to play.")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+        NavigationView {
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(spacing: 20) {
+                        SectionCard(
+                            title: "Built-in Demos",
+                            description: "Preview preloaded examples."
+                        ) {
+                            VStack(spacing: 10) {
+                                DemoButton(title: "Wake Up", systemImage: "music.quarternote.3", variant: .prominent) {
+                                    let token = resetPlayback()
+                                    try? haptics.playAudioNamed("Wakeup", withExtension: "wav", mode: .music)
+                                    if playbackToken == token {
+                                        importMessage = nil
+                                    }
                                 }
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color(.systemBackground).opacity(0.8))
-                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                
+                                DemoButton(title: "Layered Atmospheres", systemImage: "waveform.circle") {
+                                    playLayeredEffects()
+                                }
+                                
+                                DemoButton(title: "Sequenced Moments", systemImage: "clock") {
+                                    playSequentialEffects()
+                                }
                             }
-                            
-                            Button {
-                                playImportedAudio()
-                            } label: {
-                                Label("Play Imported Audio", systemImage: "play.fill")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(FilledButtonStyle(tint: .pink))
-                            .disabled(importedAudioURL == nil)
-                            .opacity(importedAudioURL == nil ? 0.5 : 1)
                         }
+                        
+                        SectionCard(
+                            title: "Bring Your Own Audio",
+                            description: "Import a file and feel the live-generated haptics."
+                        ) {
+                            VStack(alignment: .leading, spacing: 14) {
+                                Picker("Processing Mode", selection: $selectedMode) {
+                                    Text("Music").tag(HapticManager.Mode.music)
+                                    Text("SFX").tag(HapticManager.Mode.sfx)
+                                }
+                                .pickerStyle(.segmented)
+                                
+                                Button {
+                                    isImporting = true
+                                } label: {
+                                    Label("Import Audio", systemImage: "square.and.arrow.down")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(MonochromeButtonStyle(variant: .prominent))
+                                
+                                if let url = importedAudioURL {
+                                    GroupBox {
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Label(url.lastPathComponent, systemImage: "waveform")
+                                                .font(.subheadline.weight(.semibold))
+                                            Text("Stored locally and ready to play.")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                }
+                                
+                                Button {
+                                    playImportedAudio()
+                                } label: {
+                                    Label("Play Imported Audio", systemImage: "play.fill")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(MonochromeButtonStyle())
+                                .disabled(importedAudioURL == nil)
+                                .opacity(importedAudioURL == nil ? 0.4 : 1)
+                            }
+                        }
+                        
+                        if let message = importMessage {
+                            StatusBanner(message: message)
+                        }
+                        
+                        Button {
+                            resetPlayback()
+                            importMessage = nil
+                        } label: {
+                            Label("Stop All Playback", systemImage: "stop.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(MonochromeButtonStyle())
                     }
-                    
-                    if let message = importMessage {
-                        StatusBanner(message: message, isError: true)
-                    }
-                    
-                    Button {
-                        haptics.stopAll()
-                    } label: {
-                        Label("Stop All Playback", systemImage: "stop.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(StrokeButtonStyle())
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 24)
+                    .frame(minHeight: proxy.size.height, alignment: .top)
                 }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 32)
+                .background(Color(.systemGroupedBackground).ignoresSafeArea())
             }
+            .navigationTitle("AHAPpy")
+            .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationViewStyle(.stack)
         .fileImporter(isPresented: $isImporting, allowedContentTypes: [.audio]) { result in
             switch result {
             case .success(let url):
-                self.storeImportedAudio(from: url)
+                storeImportedAudio(from: url)
             case .failure(let error):
-                self.importMessage = "Import failed: \(error.localizedDescription)"
+                importMessage = "Import failed: \(error.localizedDescription)"
             }
         }
     }
     
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label {
-                Text("AHAPpy Playground")
-                    .font(.largeTitle.bold())
-            } icon: {
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.18))
-                        .frame(width: 52, height: 52)
-                    Image(systemName: "waveform.path.ecg.rectangle")
-                        .font(.title2)
-                        .foregroundStyle(.white.opacity(0.9))
+    private func playImportedAudio() {
+        guard let url = importedAudioURL else { return }
+        
+        let token = resetPlayback()
+        do {
+            try haptics.playAudio(at: url, mode: selectedMode)
+            if playbackToken == token {
+                importMessage = nil
+            }
+        } catch {
+            if playbackToken == token {
+                importMessage = "Playback failed: \(error.localizedDescription)"
+            }
+        }
+    }
+    
+    private func playLayeredEffects() {
+        let token = resetPlayback()
+        do {
+            try haptics.playAudioNamed("atmosphere-1", withExtension: "wav", mode: .music)
+            try haptics.playAudioNamed("musical-tap-3", withExtension: "wav", mode: .sfx)
+            if playbackToken == token {
+                importMessage = nil
+            }
+        } catch {
+            if playbackToken == token {
+                importMessage = "Layered playback error: \(error.localizedDescription)"
+            }
+        }
+    }
+    
+    private func playSequentialEffects() {
+        let items: [(name: String, mode: HapticManager.Mode, delay: TimeInterval)] = [
+            ("atmosphere-1", .music, 0),
+            ("musical-tap-3", .sfx, 2),
+            ("Success1", .sfx, 4)
+        ]
+        
+        let token = resetPlayback()
+        for item in items {
+            DispatchQueue.main.asyncAfter(deadline: .now() + item.delay) {
+                guard playbackToken == token else { return }
+                do {
+                    try haptics.playAudioNamed(item.name, withExtension: "wav", mode: item.mode)
+                } catch {
+                    if playbackToken == token {
+                        importMessage = "Sequential playback error: \(error.localizedDescription)"
+                    }
                 }
             }
-            Text("Turn any audio into Core Haptics patterns in real time. Test quick demos or bring your own clips and feel the difference instantly.")
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.82))
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-    }
-    
-    private func sectionCard<Content: View>(
-        title: String,
-        subtitle: String,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 18) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.title2.bold())
-                    .foregroundStyle(.primary)
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            
-            content()
-        }
-        .padding(24)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(.systemBackground).opacity(0.94))
-                .shadow(color: .black.opacity(0.12), radius: 20, x: 0, y: 16)
-        )
     }
     
     private func storeImportedAudio(from sourceURL: URL) {
@@ -175,10 +175,15 @@ struct ContentView: View {
             }
         }
         
+        resetPlayback()
+        cleanupImportedAudioFile()
+        
         do {
             let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first ??
             FileManager.default.temporaryDirectory
-            let destination = documents.appendingPathComponent(sourceURL.lastPathComponent)
+            let destination = documents
+                .appendingPathComponent("ImportedAudio")
+                .appendingPathExtension(sourceURL.pathExtension.isEmpty ? "wav" : sourceURL.pathExtension)
             
             if FileManager.default.fileExists(atPath: destination.path) {
                 try FileManager.default.removeItem(at: destination)
@@ -191,126 +196,142 @@ struct ContentView: View {
         }
     }
     
-    private func playImportedAudio() {
-        guard let url = importedAudioURL else { return }
-        
+    private func cleanupImportedAudioFile() {
+        guard let existingURL = importedAudioURL else { return }
         do {
-            try haptics.playAudio(at: url, mode: selectedMode)
-            importMessage = nil
-        } catch {
-            importMessage = "Playback failed: \(error.localizedDescription)"
-        }
-    }
-    
-    private func playLayeredEffects() {
-        do {
-            try haptics.playAudioNamed("atmosphere-1", withExtension: "wav", mode: .music)
-            try haptics.playAudioNamed("musical-tap-3", withExtension: "wav", mode: .sfx)
-        } catch {
-            importMessage = "Layered playback error: \(error.localizedDescription)"
-        }
-    }
-    
-    private func playSequentialEffects() {
-        let items: [(name: String, mode: HapticManager.Mode, delay: TimeInterval)] = [
-            ("atmosphere-1", .music, 0),
-            ("musical-tap-3", .sfx, 2),
-            ("Success1", .sfx, 4)
-        ]
-        
-        for item in items {
-            DispatchQueue.main.asyncAfter(deadline: .now() + item.delay) {
-                do {
-                    try self.haptics.playAudioNamed(item.name, withExtension: "wav", mode: item.mode)
-                } catch {
-                    self.importMessage = "Sequential playback error: \(error.localizedDescription)"
-                }
+            if FileManager.default.fileExists(atPath: existingURL.path) {
+                try FileManager.default.removeItem(at: existingURL)
             }
+        } catch {
+            // swallow cleanup errors; we'll overwrite as needed
         }
+        importedAudioURL = nil
+    }
+    
+    @discardableResult
+    private func resetPlayback() -> UUID {
+        haptics.stopAll()
+        let token = UUID()
+        playbackToken = token
+        return token
     }
 }
 
-private struct DemoButtonLabel: View {
+private struct SectionCard<Content: View>: View {
     let title: String
-    let caption: String
+    let description: String
+    let content: Content
+    
+    init(title: String, description: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.description = description
+        self.content = content()
+    }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.white)
-            Text(caption)
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.7))
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.title3.weight(.semibold))
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            content
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 14)
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
     }
 }
 
-private struct FilledButtonStyle: ButtonStyle {
-    let tint: Color
+private struct DemoButton: View {
+    let title: String
+    let systemImage: String
+    var variant: MonochromeButtonStyle.Variant = .standard
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(MonochromeButtonStyle(variant: variant))
+    }
+}
+
+private struct MonochromeButtonStyle: ButtonStyle {
+    enum Variant {
+        case standard
+        case prominent
+    }
+    
+    var variant: Variant = .standard
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(tint.gradient)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.white.opacity(configuration.isPressed ? 0.35 : 0.12), lineWidth: 1)
-            }
-            .scaleEffect(configuration.isPressed ? 0.98 : 1)
-            .animation(.easeOut(duration: 0.18), value: configuration.isPressed)
-    }
-}
-
-private struct StrokeButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.vertical, 14)
+            .padding(.vertical, 12)
             .padding(.horizontal, 16)
             .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(.systemBackground).opacity(configuration.isPressed ? 0.3 : 0.2))
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(backgroundColor.opacity(configuration.isPressed ? 0.8 : 1))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.white.opacity(0.35), lineWidth: 1.2)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(borderColor.opacity(configuration.isPressed ? 0.6 : 0.4), lineWidth: 1)
             )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .foregroundStyle(.white.opacity(0.9))
-            .font(.headline)
-            .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
+            .foregroundStyle(foregroundColor)
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+    
+    private var foregroundColor: Color {
+        switch variant {
+        case .prominent:
+            return Color(.systemBackground)
+        case .standard:
+            return .primary
+        }
+    }
+    
+    private var backgroundColor: Color {
+        switch variant {
+        case .prominent:
+            return Color.accentColor
+        case .standard:
+            return Color(.tertiarySystemBackground)
+        }
+    }
+    
+    private var borderColor: Color {
+        switch variant {
+        case .prominent:
+            return Color.accentColor
+        case .standard:
+            return Color(.separator)
+        }
     }
 }
 
 private struct StatusBanner: View {
     let message: String
-    var isError: Bool = false
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: isError ? "exclamationmark.triangle.fill" : "checkmark.seal.fill")
-                .font(.title3)
-                .foregroundStyle(isError ? Color.red : Color.green)
-                .padding(.top, 4)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(isError ? "Heads up" : "All set")
-                    .font(.headline)
-                Text(message)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.orange)
+            Text(message)
+                .font(.subheadline)
         }
-        .padding(18)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color(.systemBackground).opacity(0.95))
-                .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 10)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(.tertiarySystemBackground))
         )
     }
 }
