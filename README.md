@@ -1,5 +1,5 @@
 # AHAPpy
-<img src="https://github.com/samroman3/AHAPpy/assets/52180475/40fcaf33-45c9-4dbd-93c7-f8f8057d3125" width="200">
+<img src="https://github.com/samroman3/AHAPpy/assets/52180475/40fcaf33-45c9-4dbd-93c7-f8f8057d3125" width="200" height="200">
 
 
 
@@ -43,7 +43,7 @@ A Python script that converts WAV files to AHAP (Apple Haptic Audio Pattern) for
 
 ## Inspiration
 
-This project was inspired by Lofelt's [NiceVibrations](https://github.com/Lofelt/NiceVibrations), which offers advanced haptic feedback solutions for various applications. I felt a need for an even simpler implementation of haptic-audio synchronization that focused specifically on iOS development, leading to the creation of this WAV to AHAP converter.
+This project was inspired by Lofelt's [NiceVibrations](https://github.com/Lofelt/NiceVibrations), which offers advanced haptic feedback solutions for various applications. I felt a need for an even simpler implementation of haptic-audio synchronization that focused specifically on iOS development, leading to the creation of this AHAP converter.
 
 ## Requirements
 - Python 3.x
