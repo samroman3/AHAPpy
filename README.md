@@ -19,7 +19,23 @@ music.intensityMultiplier = 1.2
 try manager.playAudio(at: url, mode: .music, options: music)
 ```
 
- The sample iOS app (`AHAPpySample`) demonstrates layered and sequential playback using the package, and now includes an audio importer so you can drop in your own WAV (or other Core Audio–supported format) and feel the live-generated haptics. Open the sample project and build on a haptics-capable device—it's already wired to the local Swift package.
+### Quick start in your project
+1. In Xcode, choose **File ▸ Add Packages…** and supply the repo URL (`https://github.com/samroman3/AHAPpy`), or select **Add Local…** and point to the folder if you have it checked out locally.
+2. Add the `AHAPpy` product to the target you want to enrich with audio-driven haptics.
+3. Bundle a WAV (or other Core Audio readable) asset with your app, then call `HapticManager` to play it. The manager will analyse the audio on the fly, create a matching `CHHapticPattern`, and start both audio and haptics together.
+4. Tune `HapticManager.Options` if you want different window sizes, thresholds, or intensity multipliers per clip or mode. You can provide custom options per call or configure defaults at initialization.
+
+`HapticManager` exposes a simple API surface:
+- `playAudioNamed(_:withExtension:mode:options:)` to play bundle resources.
+- `playAudio(at:mode:options:)` for URLs (e.g., user-imported audio).
+- `prepareHaptics(for:mode:options:)` if you need the `CHHapticPattern` without triggering playback.
+- `stopAll()` to halt both audio and haptics immediately.
+
+### Sample app
+The sample iOS app (`AHAPpySample`) is already wired to the local package. Build it on a haptics-capable device to try:
+- Preloaded demos for layered, sequential, and music-driven haptics.
+- An audio importer that copies a user-selected file into the sandbox, then runs it through `HapticManager`.
+- Playback controls that ensure only one audio/haptic stream runs at a time.
 
 ## WAV to AHAP Converter
 
