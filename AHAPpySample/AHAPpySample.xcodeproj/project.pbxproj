@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F59506B2CB0BC3500D4D755 /* AHAPpy in Frameworks */ = {isa = PBXBuildFile; productRef = 1F59506A2CB0BC3500D4D755 /* AHAPpy */; };
 		3ABF6EB62C12222A004711CB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF6EB52C12222A004711CB /* ContentView.swift */; };
 		3ABF6EB82C122244004711CB /* AHAPpySampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF6EB72C122244004711CB /* AHAPpySampleApp.swift */; };
 		3AE088972C0A65C0005D8802 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AE088962C0A65C0005D8802 /* Assets.xcassets */; };
@@ -42,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F59506B2CB0BC3500D4D755 /* AHAPpy in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +108,9 @@
 			);
 			dependencies = (
 			);
+			packageProductDependencies = (
+				1F59506A2CB0BC3500D4D755 /* AHAPpy */,
+			);
 			name = AHAPpySample;
 			productName = AHAPpySample;
 			productReference = 3AE0888D2C0A65BE005D8802 /* AHAPpySample.app */;
@@ -135,6 +140,9 @@
 				Base,
 			);
 			mainGroup = 3AE088842C0A65BE005D8802;
+			packageReferences = (
+				1F5950672CB0BC3500D4D755 /* AHAPpy */,
+			);
 			productRefGroup = 3AE0888E2C0A65BE005D8802 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -163,6 +171,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1F5950672CB0BC3500D4D755 /* AHAPpy */ = {
+			isa = XCLocalSwiftPackageReference;
+			name = AHAPpy;
+			relativePath = "..";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1F59506A2CB0BC3500D4D755 /* AHAPpy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1F5950672CB0BC3500D4D755 /* AHAPpy */;
+			productName = AHAPpy;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3AE088892C0A65BE005D8802 /* Sources */ = {
